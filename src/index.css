@@ -2,4 +2,13 @@
 
 @theme {
   --font-terminal: "VT323", monospace;
+
+  --color-deep-teal: #05614b;
+  --color-dark-cyan: #020e0e;
+  --color-mint-green: #01de82;
+  --color-cloud-sky: #ccddea;
+}
+
+body {
+  font-family: var(--font-terminal), monospace;
 }

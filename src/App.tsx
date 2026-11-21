@@ -1,19 +1,14 @@
 import "./App.css";
-import CRTScreen from "./components/CRTScreen";
+import { Routes, Route } from "react-router";
+import Landing from "./landing";
+import Home from "./home";
 
 function App() {
   return (
-    <CRTScreen>
-      <div className="flex bg-black justify-center items-center h-screen">
-        <div className="flex flex-col gap-2">
-          <h1 className="font-terminal text-7xl">Welcome!</h1>
-          <input
-            className="font-terminal border rounded-md p-2 outine-none"
-            placeholder="Enter Secret Code"
-          />
-        </div>
-      </div>
-    </CRTScreen>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/home" element={<Home />} />
+    </Routes>
   );
 }
 
