@@ -2,6 +2,15 @@ import { useState, useEffect } from "react";
 import Toolbar from "./components/Toolbar";
 import Listtab from "./components/Listtab";
 import ProfileTab from "./components/ProfileTab";
+import DebtInfoTab from "./components/DebtInfoTab";
+
+const actionButtons = [
+  { label: "SEARCH", shortcut: "/" },
+  { label: "OPEN", shortcut: "ENTER" },
+  { label: "EDIT", shortcut: "E" },
+  { label: "ADD DEBTOR", shortcut: "A" },
+  { label: "ADD DEBT", shortcut: "W" },
+];
 
 export default function Home() {
   const [now, setNow] = useState(new Date());
@@ -39,9 +48,9 @@ export default function Home() {
           </div>
         </div>
         <Toolbar />
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row flex-1 min-h-0 gap-2">
           <Listtab />
-          <div className="w-screen h-full border-2 border-mint-green" />
+          <DebtInfoTab />
           <ProfileTab
             id="1"
             picture="../samples/shimamura.png"
@@ -53,6 +62,21 @@ export default function Home() {
             facebook="Hougetsu Shimamura"
             lastReminded="August 14 2025"
           />
+        </div>
+        <div className="flex flex-row justify-between">
+          {actionButtons.map(({ label, shortcut }) => (
+            <button
+              key={shortcut}
+              className="flex flex-col bg-mint-green text-2xl px-2 text-dark-cyan"
+            >
+              <span>
+                {"[ "}
+                {shortcut}
+                {" ]"}
+              </span>
+              <span>{label}</span>
+            </button>
+          ))}
         </div>
       </div>
     </div>

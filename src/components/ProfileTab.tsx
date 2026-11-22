@@ -22,7 +22,7 @@ export default function ProfileTab({
   ];
 
   return (
-    <div className="border-2 w-fit whitespace-nowrap shrink-0 border-mint-green p-2">
+    <div className="flex border-2 w-fit whitespace-nowrap shrink-0 border-mint-green p-2">
       <div className="flex flex-col">
         <div className="flex flex-row gap-2">
           <div className="flex justify-center items-center border-2 border-mint-green rounded-xs aspect-square h-8">
@@ -41,7 +41,7 @@ export default function ProfileTab({
           src={picture}
           alt={firstName}
         />
-        <div className="flex flex-col border-2 border-mint-green p-2 gap-2">
+        <div className="flex flex-col border-2 border-mint-green h-full justify-between p-2 gap-2">
           {infos.map(([label, value]) => (
             <div key={label} className="flex flex-row gap-10">
               <span className="flex-1 text-2xl text-cloud-sky">

@@ -1,0 +1,51 @@
+import type { Payment } from "../../types/types";
+import { formatPeso } from "../../utils/format";
+
+const headers = ["AMNT", "PD.AT", "MTHD", "FOR"];
+
+export default function PaymentView() {
+  const payments: Payment[] = [
+    {
+      id: "1",
+      debtId: "2",
+      amount: 200,
+      paidAt: "2026-11-01",
+      method: "CASH",
+    },
+    {
+      id: "2",
+      debtId: "3",
+      amount: 500,
+      paidAt: "2026-10-25",
+      method: "GCASH",
+    },
+    {
+      id: "3",
+      debtId: "3",
+      amount: 500,
+      paidAt: "2026-10-20",
+      method: "BANK",
+    },
+  ];
+  return (
+    <table className="w-full my-3">
+      <thead>
+        <tr className="text-cloud-sky text-left">
+          {headers.map((h) => (
+            <th className="px-2 py-1 text-2xl">{h}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {payments.map((p) => (
+          <tr key={p.id} className="text-2xl">
+            <td className="px-2 py-1">{formatPeso(p.amount)}</td>
+            <td className="px-2 py-1">{p.paidAt}</td>
+            <td className="px-2 py-1">{p.method ?? "NO METHOD"}</td>
+            <td className="px-2 py-1">DEBT ID: {p.debtId}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
