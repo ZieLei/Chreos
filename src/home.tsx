@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Toolbar from "./components/Toolbar";
+import Listtab from "./components/Listtab";
 
 export default function Home() {
   const [now, setNow] = useState(new Date());
@@ -37,6 +38,10 @@ export default function Home() {
           </div>
         </div>
         <Toolbar />
+        <div className="flex flex-row gap-2">
+          <Listtab />
+          <div className="w-screen h-full border-2 border-mint-green" />
+        </div>
       </div>
     </div>
   );
