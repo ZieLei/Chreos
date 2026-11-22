@@ -6,12 +6,16 @@ export default function Listtab() {
           <div className="flex justify-center items-center border-2 border-mint-green rounded-xs aspect-square h-8">
             <h1 className="text-2xl">12</h1>
           </div>
-          <div className="flex-1 bg-mint-green text-dark-cyan text-2xl px-5">
+          <div className="flex-1 text-mint-green text-2xl px-2">
             LIST OF RECORDS
           </div>
+
+          <div className="flex border-2 bg-black border-mint-green aspect-square h-8 justify-center items-center rounded-xs">
+            <h1 className="font-terminal text-2xl text-center">?</h1>
+          </div>
         </div>
-        <div className="flex mt-2 flex-row">
-          <Card name="Lucia Caminos" debt={1000} />
+        <div className="flex mt-2 flex-row border-2 border-mint-green p-2">
+          <Card name="Hougetsu Shimamura" debt={1000} />
         </div>
       </div>
     </div>
@@ -22,8 +26,10 @@ function Card({ name, debt }: { name: string; debt: number }) {
   return (
     <div className="w-100">
       <div className="text-2xl">
-        <div className="flex flex-row justify-between">
-          <span className="text-cloud-sky">{name} : </span>
+        <div className="flex flex-row gap-5 justify-between">
+          <span className="flex-1 px-2 text-dark-cyan bg-mint-green">
+            {name} :{" "}
+          </span>
           <span>₱ {debt}</span>
         </div>
       </div>

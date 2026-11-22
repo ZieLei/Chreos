@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Toolbar from "./components/Toolbar";
 import Listtab from "./components/Listtab";
+import ProfileTab from "./components/ProfileTab";
 
 export default function Home() {
   const [now, setNow] = useState(new Date());
@@ -41,6 +42,17 @@ export default function Home() {
         <div className="flex flex-row gap-2">
           <Listtab />
           <div className="w-screen h-full border-2 border-mint-green" />
+          <ProfileTab
+            id="1"
+            picture="../samples/shimamura.png"
+            firstName="Hougetsu"
+            lastName="Shimamura"
+            birthday="April 10 2005"
+            phoneNumber="09123456789"
+            email="iloveadachi@gmail.com"
+            facebook="Hougetsu Shimamura"
+            lastReminded="August 14 2025"
+          />
         </div>
       </div>
     </div>
