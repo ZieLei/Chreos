@@ -1,6 +1,31 @@
 import { formatPeso } from "../utils/format";
+import { useDebtors } from "../hooks/useDebtors";
+import { useDebts } from "../hooks/useDebts";
+import { useState } from "react";
+import { getDebtor } from "../api/debtor.api";
+import { useDebtor } from "../hooks/useDebtor";
+import type { Debtor } from "../types/types";
 
-export default function Listtab() {
+export default function Listtab({
+  selected,
+  onSelect,
+}: {
+  selected: number;
+  onSelect: (id: number) => void;
+}) {
+  const { debts, loading: l1, error: e1 } = useDebts();
+  const { debtor, loading: l2, error: e2 } = useDebtors();
+
+  if (l1 || l2) return <p>Loading list...</p>;
+
+  if (e1 || e2) return <p>{e1 ?? e2}</p>;
+
+  // TODO: needs to handle partial payments
+  const totalDebt = (id: number) =>
+    (debts ?? [])
+      .filter((d) => d.debtorId === id && d.status !== "PAID")
+      .reduce((sum, d) => sum + d.amount, 0);
+
   return (
     <div className="flex border-2 border-mint-green p-2">
       <div className="flex flex-col">
@@ -17,21 +42,42 @@ export default function Listtab() {
           </div>
         </div>
         <div className="flex mt-2 flex-col h-full border-2 border-mint-green p-2">
-          <Card name="Hougetsu Shimamura" debt={1700} />
+          {debtor?.map((d) => (
+            <Card
+              key={d.id}
+              debtor={d}
+              debt={totalDebt(d.id)}
+              isSelected={d.id === selected}
+              onSelect={() => onSelect(d.id)}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
 }
 
-function Card({ name, debt }: { name: string; debt: number }) {
+function Card({
+  debtor,
+  debt,
+  isSelected,
+  onSelect,
+}: {
+  debtor: Debtor;
+  debt: number;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
   return (
     <div className="w-100">
       <div className="text-2xl">
         <div className="flex flex-row gap-5 justify-between">
-          <span className="flex-1 px-2 text-dark-cyan bg-mint-green">
-            {name} :{" "}
-          </span>
+          <button
+            onClick={onSelect}
+            className={`flex-1 px-2 text-left ${isSelected ? "text-dark-cyan bg-mint-green" : "text-mint-green bg-black"}`}
+          >
+            {debtor.firstName} {debtor.lastName} :{" "}
+          </button>
           <span>{formatPeso(debt)}</span>
         </div>
       </div>

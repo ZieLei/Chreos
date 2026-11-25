@@ -1,5 +1,5 @@
-export type Debtor = {
-  id: string;
+export interface Debtor {
+  id: number;
   picture?: string;
   firstName: string;
   lastName: string;
@@ -8,20 +8,23 @@ export type Debtor = {
   email?: string;
   facebook?: string;
   lastReminded?: string;
-};
+}
 
-export type Debt = {
-  id: string;
+export interface Debt {
+  id: number;
+  debtorId: number;
   amount: number;
   createdAt: string;
   dueDate?: string;
-  status: "UNPAID" | "PARTIAL" | "PAID";
-};
+  status: DebtStatus;
+}
 
-export type Payment = {
-  id: string;
+export type DebtStatus = "UNPAID" | "PAID" | "PARTIAL" | "OVERDUE";
+
+export interface Payment {
+  id: number;
   debtId: string;
   amount: number;
   paidAt: string;
   method?: string;
-};
+}

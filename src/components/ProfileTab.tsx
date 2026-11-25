@@ -1,24 +1,21 @@
 import type { Debtor } from "../types/types";
 
-export default function ProfileTab({
-  id,
-  picture,
-  firstName,
-  lastName,
-  birthday,
-  phoneNumber,
-  email,
-  facebook,
-  lastReminded,
-}: Debtor) {
+interface ProfileTabProps {
+  debtor: Debtor;
+}
+
+export default function ProfileTab({ debtor }: ProfileTabProps) {
   const infos = [
-    ["FIRST NAME", firstName],
-    ["LAST NAME", lastName],
-    ["BIRTHDATE", birthday],
-    ["PHONE", phoneNumber],
-    ["EMAIL", email],
-    ["FACEBOOK", facebook],
-    ["LAST REMINDED", lastReminded],
+    ["FIRST NAME", debtor.firstName],
+    ["LAST NAME", debtor.lastName],
+    ["BIRTHDATE", debtor.birthday],
+    ["PHONE", debtor.phoneNumber],
+    ["EMAIL", debtor.email],
+    ["FACEBOOK", debtor.facebook],
+    [
+      "LAST REMINDED",
+      debtor.lastReminded ? debtor.lastReminded : "Not reminded yet",
+    ],
   ];
 
   return (
@@ -26,7 +23,7 @@ export default function ProfileTab({
       <div className="flex flex-col">
         <div className="flex flex-row gap-2">
           <div className="flex justify-center items-center border-2 border-mint-green rounded-xs aspect-square h-8">
-            <h1 className="text-2xl">{id}</h1>
+            <h1 className="text-2xl">{debtor.id}</h1>
           </div>
           <div className="flex-1 text-mint-green text-2xl px-2">
             PROFILE INFORMATION
@@ -38,8 +35,8 @@ export default function ProfileTab({
         </div>
         <img
           className="aspect-square my-2 h-40 w-auto object-cover self-center border-2 border-mint-green p-2"
-          src={picture}
-          alt={firstName}
+          src={debtor.picture}
+          alt={debtor.firstName}
         />
         <div className="flex flex-col border-2 border-mint-green h-full justify-between p-2 gap-2">
           {infos.map(([label, value]) => (

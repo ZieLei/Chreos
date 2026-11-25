@@ -3,6 +3,7 @@ import Toolbar from "./components/Toolbar";
 import Listtab from "./components/Listtab";
 import ProfileTab from "./components/ProfileTab";
 import DebtInfoTab from "./components/DebtInfoTab";
+import { useDebtor } from "./hooks/useDebtor";
 
 const actionButtons = [
   { label: "SEARCH", shortcut: "/" },
@@ -13,7 +14,9 @@ const actionButtons = [
 ];
 
 export default function Home() {
+  const [selected, setSelected] = useState(1);
   const [now, setNow] = useState(new Date());
+  const { debtor, loading, error } = useDebtor(selected);
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 1000);
@@ -25,6 +28,11 @@ export default function Home() {
     minute: "2-digit",
     hour12: false,
   });
+
+  if (loading) return <p>Loading debtors...</p>;
+
+  if (error) return <p>{error}</p>;
+
   return (
     <div className="h-screen bg-black p-3">
       <div className="flex flex-col gap-2 h-full bg-black rounded-sm border-2 border-mint-green py-2 px-2">
@@ -49,19 +57,9 @@ export default function Home() {
         </div>
         <Toolbar />
         <div className="flex flex-row flex-1 min-h-0 gap-2">
-          <Listtab />
+          <Listtab selected={selected} onSelect={setSelected} />
           <DebtInfoTab />
-          <ProfileTab
-            id="1"
-            picture="../samples/shimamura.png"
-            firstName="Hougetsu"
-            lastName="Shimamura"
-            birthday="April 10 2005"
-            phoneNumber="09123456789"
-            email="iloveadachi@gmail.com"
-            facebook="Hougetsu Shimamura"
-            lastReminded="August 14 2025"
-          />
+          <ProfileTab debtor={debtor} />
         </div>
         <div className="flex flex-row justify-between">
           {actionButtons.map(({ label, shortcut }) => (

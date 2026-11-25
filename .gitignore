@@ -25,4 +25,6 @@ dist-ssr
 
 .env
 
+chreos-api/data/
+
 samples/
