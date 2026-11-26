@@ -22,9 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*.db
 
 .env
 
 chreos-api/data/
+chreos-api/.env
 
 samples/

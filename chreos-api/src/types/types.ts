@@ -1,31 +1,13 @@
-export interface Debtor {
-  id: number;
-  picture?: string;
-  firstName: string;
-  lastName: string;
-  birthday: string;
-  phoneNumber?: string;
-  email?: string;
-  facebook?: string;
-  lastReminded?: string;
-}
+import type { debtors, debts, payments } from "../db/schema.js";
 
-export interface Debt {
-  id: number;
-  debtorId: number;
-  amount: number;
-  createdAt: string;
-  dueDate?: string;
-  status: DebtStatus;
-}
+// Derived from the Drizzle schema so they can't drift from the tables.
+// Note: nullable columns come through as `T | null` rather than `T | undefined`.
+export type Debtor = typeof debtors.$inferSelect;
+export type NewDebtor = typeof debtors.$inferInsert;
 
-export type DebtStatus = "UNPAID" | "PAID" | "PARTIAL" | "OVERDUE";
+export type Debt = typeof debts.$inferSelect;
+export type NewDebt = typeof debts.$inferInsert;
+export type DebtStatus = Debt["status"];
 
-export interface Payment {
-  id: number;
-  debtorId: number;
-  debtId: number;
-  amount: number;
-  paidAt: string;
-  method?: string;
-}
+export type Payment = typeof payments.$inferSelect;
+export type NewPayment = typeof payments.$inferInsert;
