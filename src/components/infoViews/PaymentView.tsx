@@ -1,32 +1,16 @@
 import type { Payment } from "../../types/types";
 import { formatPeso } from "../../utils/format";
+import { usePayments } from "../../hooks/usePayments";
 
 const headers = ["AMNT", "PD.AT", "MTHD", "FOR"];
 
-export default function PaymentView() {
-  const payments: Payment[] = [
-    {
-      id: "1",
-      debtId: "2",
-      amount: 200,
-      paidAt: "2026-11-01",
-      method: "CASH",
-    },
-    {
-      id: "2",
-      debtId: "3",
-      amount: 500,
-      paidAt: "2026-10-25",
-      method: "GCASH",
-    },
-    {
-      id: "3",
-      debtId: "3",
-      amount: 500,
-      paidAt: "2026-10-20",
-      method: "BANK",
-    },
-  ];
+export default function PaymentView({ selected }: { selected: number }) {
+  const { payment, loading, error } = usePayments({ selected });
+
+  if (loading) return <p>loading..</p>;
+
+  if (error) return <p>{error}</p>;
+
   return (
     <table className="w-full my-3">
       <thead>
@@ -37,7 +21,7 @@ export default function PaymentView() {
         </tr>
       </thead>
       <tbody>
-        {payments.map((p) => (
+        {payment.map((p) => (
           <tr key={p.id} className="text-2xl">
             <td className="px-2 py-1">{formatPeso(p.amount)}</td>
             <td className="px-2 py-1">{p.paidAt}</td>

@@ -1,26 +1,14 @@
-import type { Debt } from "../../types/types";
 import { formatPeso } from "../../utils/format";
+import { useDebt } from "../../hooks/useDebt";
 
 const headers = ["AMNT", "DATE", "DUE", "STAT", "ACT"];
 
-export default function DebtView() {
-  const debts: Debt[] = [
-    { id: "1", amount: 500, createdAt: "2026-11-01", status: "UNPAID" },
-    {
-      id: "2",
-      amount: 1200,
-      createdAt: "2026-11-05",
-      dueDate: "2026-12-01",
-      status: "PARTIAL",
-    },
-    {
-      id: "3",
-      amount: 1000,
-      createdAt: "2026-09-25",
-      dueDate: "2026-11-01",
-      status: "PAID",
-    },
-  ];
+export default function DebtView({ selected }: { selected: number }) {
+  const { debts, loading, error } = useDebt(selected);
+
+  if (loading) return <p>loading..</p>;
+
+  if (error) return <p>{error}</p>;
 
   return (
     <table className="w-full my-3">

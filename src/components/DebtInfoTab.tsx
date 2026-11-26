@@ -9,7 +9,7 @@ const tabs = [
   { label: "Actions", View: ActionView },
 ];
 
-export default function DebtInfoTab() {
+export default function DebtInfoTab({ selected }: { selected: number }) {
   const [active, setActive] = useState(0);
   const ActiveView = tabs[active].View;
 
@@ -46,7 +46,7 @@ export default function DebtInfoTab() {
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <ActiveView />
+            <ActiveView selected={selected} />
           </div>
         </div>
       </div>

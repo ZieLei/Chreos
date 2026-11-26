@@ -23,7 +23,7 @@ export type DebtStatus = "UNPAID" | "PAID" | "PARTIAL" | "OVERDUE";
 
 export interface Payment {
   id: number;
-  debtId: string;
+  debtId: number;
   amount: number;
   paidAt: string;
   method?: string;

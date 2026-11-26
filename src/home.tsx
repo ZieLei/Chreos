@@ -58,7 +58,7 @@ export default function Home() {
         <Toolbar />
         <div className="flex flex-row flex-1 min-h-0 gap-2">
           <Listtab selected={selected} onSelect={setSelected} />
-          <DebtInfoTab />
+          <DebtInfoTab selected={selected} />
           <ProfileTab debtor={debtor} />
         </div>
         <div className="flex flex-row justify-between">

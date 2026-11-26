@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import type { Debt, Debtor } from "./types/types.js";
+import type { Debt, Debtor, Payment } from "./types/types.js";
 
 const app = express();
 
@@ -31,6 +31,49 @@ const debtors: Debtor[] = [
   },
 ];
 
+const payments: Payment[] = [
+  {
+    id: 1,
+    debtorId: 1,
+    debtId: 2,
+    amount: 200,
+    paidAt: "2026-11-01",
+    method: "CASH",
+  },
+  {
+    id: 2,
+    debtorId: 1,
+    debtId: 3,
+    amount: 500,
+    paidAt: "2026-10-25",
+    method: "GCASH",
+  },
+  {
+    id: 3,
+    debtorId: 1,
+    debtId: 3,
+    amount: 500,
+    paidAt: "2026-10-20",
+    method: "BANK",
+  },
+  {
+    id: 4,
+    debtorId: 2,
+    debtId: 4,
+    amount: 150,
+    paidAt: "2026-11-01",
+    method: "CASH",
+  },
+  {
+    id: 5,
+    debtorId: 2,
+    debtId: 5,
+    amount: 150,
+    paidAt: "2026-10-25",
+    method: "GCASH",
+  },
+];
+
 const debts: Debt[] = [
   {
     id: 1,
@@ -53,6 +96,21 @@ const debts: Debt[] = [
     amount: 1000,
     createdAt: "09-25-2026",
     dueDate: "11-01-2026",
+    status: "PAID",
+  },
+  {
+    id: 4,
+    debtorId: 2,
+    amount: 700,
+    createdAt: "10-01-2026",
+    dueDate: "12-01-2026",
+    status: "UNPAID",
+  },
+  {
+    id: 5,
+    debtorId: 2,
+    amount: 300,
+    createdAt: "08-20-2026",
     status: "PAID",
   },
 ];
@@ -97,6 +155,21 @@ app.get("/api/debtors/:debtorId/debts", async (req, res) => {
 
 app.get("/api/debts/", (_req, res) => {
   res.json(debts);
+});
+
+app.get("/api/debtors/:debtorId/payments", async (req, res) => {
+  const debtorId = Number(req.params.debtorId);
+
+  const payment = payments.filter((payments) => payments.debtorId === debtorId);
+
+  if (!payment) {
+    res.status(404).json({
+      message: "Payments not found",
+    });
+    return;
+  }
+
+  res.json(payment);
 });
 
 export default app;
