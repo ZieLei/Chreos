@@ -1,4 +1,12 @@
-export default function Toolbar() {
+export default function Toolbar({
+  mode,
+  records,
+  filter,
+}: {
+  mode: string;
+  records: number;
+  filter: string;
+}) {
   return (
     <div className="flex flex-row justify-between w-full border-2 border-mint-green p-2">
       <div className="flex flex-col">
@@ -7,7 +15,7 @@ export default function Toolbar() {
           <div className="bg-mint-green text-dark-cyan text-2xl px-3">
             MODE:
           </div>
-          <div className="px-3 text-2xl text-mint-green">VIEW</div>
+          <div className="px-3 text-2xl text-mint-green">{mode}</div>
         </div>
         <div className="flex-1 flex flex-row justify-between items-center">
           {["■", "■", "■", "▣", "■", "■", "■"].map((s, i) => (
@@ -22,7 +30,7 @@ export default function Toolbar() {
       <div className="flex flex-col text-2xl">
         <div className="grid grid-cols-[auto_auto] gap-x-5 gap-y-1 text-2xl">
           <div className="text-cloud-sky">Records :</div>
-          <div className="bg-mint-green text-dark-cyan px-2">12</div>
+          <div className="bg-mint-green text-dark-cyan px-2">{records}</div>
           <div className="text-cloud-sky">Owed :</div>
           <div className="bg-mint-green text-dark-cyan px-2">₱4,250</div>
         </div>
@@ -40,7 +48,9 @@ export default function Toolbar() {
       <div className="flex flex-col text-2xl">
         <div className="grid grid-cols-[auto_auto] gap-x-5 gap-y-1 text-2xl">
           <div className="text-cloud-sky">Filter :</div>
-          <div className="bg-mint-green text-dark-cyan px-2">All</div>
+          <div className="bg-mint-green text-dark-cyan px-2 max-w-40 truncate">
+            {filter || "All"}
+          </div>
           <div className="text-cloud-sky">Cipher :</div>
           <div className="bg-mint-green text-dark-cyan px-2">AES-256</div>
         </div>

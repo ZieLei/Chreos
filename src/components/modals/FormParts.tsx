@@ -49,14 +49,14 @@ export function FormButtons({
       <button
         type="submit"
         disabled={saving}
-        className="border-2 border-mint-green p-2 text-2xl active:bg-mint-green active:text-dark-cyan rounded-sm disabled:cursor-wait"
+        className="border-2 border-mint-green p-2 text-2xl outline-none active:bg-mint-green active:text-dark-cyan focus:bg-mint-green focus:text-dark-cyan rounded-sm disabled:cursor-wait"
       >
         {saving ? "SAVING..." : submitLabel}
       </button>
       <button
         type="button"
         onClick={onCancel}
-        className="border-2 border-mint-green p-2 text-2xl active:bg-mint-green active:text-dark-cyan rounded-sm"
+        className="border-2 border-mint-green p-2 text-2xl outline-none active:bg-mint-green active:text-dark-cyan focus:bg-mint-green focus:text-dark-cyan rounded-sm"
       >
         [ ESC ] CANCEL
       </button>

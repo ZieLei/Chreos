@@ -73,7 +73,7 @@ export default function PaymentForm({
               key={m}
               type="button"
               onClick={() => setMethod(m)}
-              className={`text-2xl px-4 border-2 border-mint-green ${
+              className={`text-2xl px-4 border-2 border-mint-green outline-none focus:underline ${
                 m === method
                   ? "bg-mint-green text-dark-cyan"
                   : "text-mint-green"
