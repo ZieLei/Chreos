@@ -6,7 +6,7 @@ const sendButtons = [
 ];
 
 export default function ActionView() {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState("");
 
   return (
     <div className="flex flex-col gap-2">

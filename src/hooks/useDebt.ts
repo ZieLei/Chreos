@@ -2,7 +2,7 @@ import { getDebt } from "../api/debt.api";
 import type { Debt } from "../types/types";
 import { useState, useEffect } from "react";
 
-export const useDebt = (debtorId: number) => {
+export const useDebt = (debtorId: number, refreshKey = 0) => {
   const [debts, setDebts] = useState<Debt[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -13,6 +13,7 @@ export const useDebt = (debtorId: number) => {
         const data = await getDebt(debtorId);
 
         setDebts(data);
+        setError(null);
       } catch (err) {
         setError("Could not load debt");
       } finally {
@@ -21,7 +22,7 @@ export const useDebt = (debtorId: number) => {
     };
 
     fetchDebt();
-  }, [debtorId]);
+  }, [debtorId, refreshKey]);
 
   return { debts, loading, error };
 };

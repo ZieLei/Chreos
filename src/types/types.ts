@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface Debtor {
   id: number;
   picture?: string;
@@ -28,3 +30,15 @@ export interface Payment {
   paidAt: string;
   method?: string;
 }
+
+export type ModalProps = {
+  open: boolean;
+  onClose: () => void;
+  children: ReactNode;
+};
+
+export type DebtorInput = Omit<Debtor, "id" | "lastReminded">;
+
+export type DebtInput = Pick<Debt, "amount" | "createdAt" | "dueDate">;
+
+export type PaymentInput = Pick<Payment, "amount" | "paidAt" | "method">;

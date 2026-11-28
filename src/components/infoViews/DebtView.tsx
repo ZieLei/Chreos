@@ -1,42 +1,130 @@
+import { useState } from "react";
 import { formatPeso } from "../../utils/format";
 import { useDebt } from "../../hooks/useDebt";
+import { deleteDebt, updateDebt } from "../../api/debt.api";
+import type { Debt } from "../../types/types";
+import Modal from "../Modal";
+import DebtForm from "../modals/DebtForm";
+import PaymentForm from "../modals/PaymentForm";
+import ConfirmDelete from "../modals/ConfirmDelete";
 
 const headers = ["AMNT", "DATE", "DUE", "STAT", "ACT"];
 
-export default function DebtView({ selected }: { selected: number }) {
-  const { debts, loading, error } = useDebt(selected);
+const actionButtonClass =
+  "text-center border-2 border-mint-green bg-black text-mint-green px-2 active:bg-mint-green active:text-dark-cyan rounded-sm";
+
+type DebtModal = { type: "pay" | "edit" | "delete"; debt: Debt } | null;
+
+export default function DebtView({
+  selected,
+  refreshKey,
+  onChanged,
+}: {
+  selected: number;
+  refreshKey: number;
+  onChanged: () => void;
+}) {
+  const { debts, loading, error } = useDebt(selected, refreshKey);
+  const [modal, setModal] = useState<DebtModal>(null);
 
   if (loading) return <p>loading..</p>;
 
   if (error) return <p>{error}</p>;
 
+  const closeModal = () => setModal(null);
+
+  const handleSaved = () => {
+    setModal(null);
+    onChanged();
+  };
+
   return (
-    <table className="w-full my-3">
-      <thead>
-        <tr className="text-cloud-sky text-left">
-          {headers.map((h) => (
-            <th className="px-2 py-1 text-2xl">{h}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {debts.map((d) => (
-          <tr key={d.id} className="text-2xl">
-            <td className="px-2 py-1">{formatPeso(d.amount)}</td>
-            <td className="px-2 py-1">{d.createdAt}</td>
-            <td className="px-2 py-1">{d.dueDate ?? "NO DUE DATE"}</td>
-            <td className="px-2 py-1">{d.status}</td>
-            <td className="px-2 py-1">
-              <button
-                disabled={d.status === "PAID"}
-                className="w-15 text-center border-2 border-mint-green bg-black text-mint-green px-2 active:bg-mint-green active:text-dark-cyan rounded-sm disabled:active:bg-mint-green disabled:active:text-dark-cyan disabled:bg-mint-green disabled:text-dark-cyan disabled:cursor-not-allowed"
-              >
-                {d.status === "PAID" ? "PAID" : "PAY"}
-              </button>
-            </td>
+    <>
+      <table className="w-full my-3">
+        <thead>
+          <tr className="text-cloud-sky text-left">
+            {headers.map((h) => (
+              <th key={h} className="px-2 py-1 text-2xl">
+                {h}
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {debts?.map((d) => (
+            <tr key={d.id} className="text-2xl">
+              <td className="px-2 py-1">{formatPeso(d.amount)}</td>
+              <td className="px-2 py-1">{d.createdAt}</td>
+              <td className="px-2 py-1">{d.dueDate ?? "NO DUE DATE"}</td>
+              <td className="px-2 py-1">{d.status}</td>
+              <td className="px-2 py-1">
+                <div className="flex flex-row gap-2">
+                  <button
+                    disabled={d.status === "PAID"}
+                    onClick={() => setModal({ type: "pay", debt: d })}
+                    className="w-15 text-center border-2 border-mint-green bg-black text-mint-green px-2 active:bg-mint-green active:text-dark-cyan rounded-sm disabled:active:bg-mint-green disabled:active:text-dark-cyan disabled:bg-mint-green disabled:text-dark-cyan disabled:cursor-not-allowed"
+                  >
+                    {d.status === "PAID" ? "PAID" : "PAY"}
+                  </button>
+                  <button
+                    onClick={() => setModal({ type: "edit", debt: d })}
+                    className={actionButtonClass}
+                  >
+                    EDT
+                  </button>
+                  <button
+                    onClick={() => setModal({ type: "delete", debt: d })}
+                    className={actionButtonClass}
+                  >
+                    DEL
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {debts?.length === 0 && (
+        <p className="text-2xl text-center text-cloud-sky">
+          {"[ "}NO DEBTS RECORDED{" ]"}
+        </p>
+      )}
+
+      <Modal open={modal?.type === "pay"} onClose={closeModal}>
+        {modal && (
+          <PaymentForm
+            debt={modal.debt}
+            onSaved={handleSaved}
+            onClose={closeModal}
+          />
+        )}
+      </Modal>
+
+      <Modal open={modal?.type === "edit"} onClose={closeModal}>
+        {modal && (
+          <DebtForm
+            title={`EDIT DEBT #${modal.debt.id}`}
+            submitLabel="[ ENTER ] SAVE"
+            debt={modal.debt}
+            onSubmit={(input) => updateDebt(modal.debt.id, input)}
+            onSaved={handleSaved}
+            onClose={closeModal}
+          />
+        )}
+      </Modal>
+
+      <Modal open={modal?.type === "delete"} onClose={closeModal}>
+        {modal && (
+          <ConfirmDelete
+            title={`DELETE DEBT #${modal.debt.id}`}
+            message={`${formatPeso(modal.debt.amount)} and all its payments will be removed.`}
+            onConfirm={() => deleteDebt(modal.debt.id)}
+            onDeleted={handleSaved}
+            onClose={closeModal}
+          />
+        )}
+      </Modal>
+    </>
   );
 }

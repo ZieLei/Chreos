@@ -1,20 +1,19 @@
 import { formatPeso } from "../utils/format";
 import { useDebtors } from "../hooks/useDebtors";
 import { useDebts } from "../hooks/useDebts";
-import { useState } from "react";
-import { getDebtor } from "../api/debtor.api";
-import { useDebtor } from "../hooks/useDebtor";
 import type { Debtor } from "../types/types";
 
 export default function Listtab({
   selected,
   onSelect,
+  refreshKey,
 }: {
-  selected: number;
+  selected: number | null;
   onSelect: (id: number) => void;
+  refreshKey: number;
 }) {
-  const { debts, loading: l1, error: e1 } = useDebts();
-  const { debtor, loading: l2, error: e2 } = useDebtors();
+  const { debts, loading: l1, error: e1 } = useDebts(refreshKey);
+  const { debtor, loading: l2, error: e2 } = useDebtors(refreshKey);
 
   if (l1 || l2) return <p>Loading list...</p>;
 

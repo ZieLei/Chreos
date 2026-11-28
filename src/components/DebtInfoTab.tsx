@@ -9,7 +9,15 @@ const tabs = [
   { label: "Actions", View: ActionView },
 ];
 
-export default function DebtInfoTab({ selected }: { selected: number }) {
+export default function DebtInfoTab({
+  selected,
+  refreshKey,
+  onChanged,
+}: {
+  selected: number;
+  refreshKey: number;
+  onChanged: () => void;
+}) {
   const [active, setActive] = useState(0);
   const ActiveView = tabs[active].View;
 
@@ -46,7 +54,11 @@ export default function DebtInfoTab({ selected }: { selected: number }) {
           </div>
 
           <div className="flex-1 min-h-0 overflow-y-auto">
-            <ActiveView selected={selected} />
+            <ActiveView
+              selected={selected}
+              refreshKey={refreshKey}
+              onChanged={onChanged}
+            />
           </div>
         </div>
       </div>
