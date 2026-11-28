@@ -39,6 +39,15 @@ export const payments = sqliteTable("payments", {
   method: text("method"),
 });
 
+// Login sessions. Only a SHA-256 hash of the token is stored, so a leaked
+// database file can't be used to log in.
+export const sessions = sqliteTable("sessions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  tokenHash: text("token_hash").notNull().unique(),
+  createdAt: integer("created_at").notNull(),
+  expiresAt: integer("expires_at").notNull(),
+});
+
 // Relations power the nested `db.query.x.findMany({ with: { ... } })` API.
 export const debtorsRelations = relations(debtors, ({ many }) => ({
   debts: many(debts),
@@ -51,6 +60,9 @@ export const debtsRelations = relations(debts, ({ one, many }) => ({
 }));
 
 export const paymentsRelations = relations(payments, ({ one }) => ({
-  debtor: one(debtors, { fields: [payments.debtorId], references: [debtors.id] }),
+  debtor: one(debtors, {
+    fields: [payments.debtorId],
+    references: [debtors.id],
+  }),
   debt: one(debts, { fields: [payments.debtId], references: [debts.id] }),
 }));

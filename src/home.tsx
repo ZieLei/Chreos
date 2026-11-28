@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { logout } from "./api/auth.api";
 import Toolbar from "./components/Toolbar";
 import Listtab from "./components/Listtab";
 import ProfileTab from "./components/ProfileTab";
@@ -14,10 +16,11 @@ import { useDebtors } from "./hooks/useDebtors";
 import { pressKey, useKeyboard } from "./hooks/useKeyboard";
 import { deleteDebtor, updateDebtor } from "./api/debtor.api";
 import { createDebt } from "./api/debt.api";
-import type { Debtor } from "./types/types";
-
-// VIEW: moving through the list, OPEN: inside debt information, SEARCH: typing a filter
-type Mode = "VIEW" | "OPEN" | "SEARCH";
+import type { Debtor, Mode } from "./types/types";
+import { useDebts } from "./hooks/useDebts";
+import { useAllPayments } from "./hooks/useAllPayments";
+import { useCryptoInfo } from "./hooks/useCryptoInfo";
+import { getBalances } from "./utils/balance";
 
 // Every button just presses its key, so clicking and typing share one code path
 const actionButtons: Record<
@@ -71,8 +74,16 @@ export default function Home() {
   const [mode, setMode] = useState<Mode>("VIEW");
   const [query, setQuery] = useState("");
   const { debtor: debtors, loading: debtorsLoading } = useDebtors(refreshKey);
+  const { debts, loading: debtsLoading } = useDebts(refreshKey);
+  const { payments, loading: paymentsLoading } = useAllPayments(refreshKey);
+  const { cryptoInfo } = useCryptoInfo();
 
   const visibleDebtors = (debtors ?? []).filter((d) => matchesQuery(d, query));
+  const balances = getBalances(debts ?? [], payments ?? []);
+  const visibleOwed = visibleDebtors.reduce(
+    (sum, d) => sum + (balances.get(d.id)?.owed ?? 0),
+    0,
+  );
 
   // Fall back to the first debtor when the selected one doesn't exist (anymore)
   // or is hidden by the search filter
@@ -86,8 +97,18 @@ export default function Home() {
   // Can't be inside a record that isn't there
   const currentMode: Mode = mode === "OPEN" && !debtor ? "VIEW" : mode;
 
+  const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const refresh = () => setRefreshKey((k) => k + 1);
   const closeModal = () => setActiveModal(null);
+
+  async function handleLogout() {
+    if (loggingOut) return;
+    setLoggingOut(true);
+    await logout();
+    navigate("/", { replace: true });
+  }
 
   function selectAt(index: number) {
     const target = visibleDebtors[index];
@@ -144,6 +165,9 @@ export default function Home() {
         return true;
       case "?":
         setActiveModal("help");
+        return true;
+      case "q":
+        handleLogout();
         return true;
     }
     return false;
@@ -218,7 +242,9 @@ export default function Home() {
     hour12: false,
   });
 
-  if (loading || debtorsLoading) return <p>Loading debtors...</p>;
+  if (loading || debtorsLoading || debtsLoading || paymentsLoading) {
+    return <p>Loading debtors...</p>;
+  }
 
   if (error) return <p>{error}</p>;
 
@@ -242,6 +268,17 @@ export default function Home() {
 
           <button
             tabIndex={-1}
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="flex border-2 bg-black border-mint-green h-8 px-2 justify-center items-center rounded-xs whitespace-nowrap active:bg-mint-green active:text-dark-cyan disabled:cursor-wait"
+          >
+            <h1 className="font-terminal text-2xl text-center">
+              {loggingOut ? "LOGGING OUT..." : "[ Q ] LOGOUT"}
+            </h1>
+          </button>
+
+          <button
+            tabIndex={-1}
             onClick={() => setActiveModal("help")}
             className="flex border-2 bg-black border-mint-green aspect-square h-8 justify-center items-center rounded-xs active:bg-mint-green active:text-dark-cyan"
           >
@@ -250,15 +287,20 @@ export default function Home() {
         </div>
         <Toolbar
           mode={currentMode}
+          target={debtor}
+          position={visibleDebtors.findIndex((d) => d.id === selectedId)}
           records={visibleDebtors.length}
+          totalRecords={debtors?.length ?? 0}
+          owed={visibleOwed}
           filter={query}
+          cipher={cryptoInfo?.algorithm ?? null}
         />
         <div className="flex flex-row flex-1 min-h-0 gap-2">
           <Listtab
             debtors={visibleDebtors}
             selected={selectedId}
             onSelect={setSelected}
-            refreshKey={refreshKey}
+            balances={balances}
             focused={currentMode === "VIEW"}
             onFocus={() => mode === "OPEN" && setMode("VIEW")}
             query={query}

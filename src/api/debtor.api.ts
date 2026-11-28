@@ -1,10 +1,9 @@
 import type { Debtor, DebtorInput } from "../types/types";
+import { apiFetch } from "./client";
 import { errorMessage } from "./error";
 
-const API_URL = "http://localhost:8000/api";
-
 export const getDebtors = async (): Promise<Debtor[]> => {
-  const response = await fetch(`${API_URL}/debtors`);
+  const response = await apiFetch(`/debtors`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch debtors");
@@ -14,7 +13,7 @@ export const getDebtors = async (): Promise<Debtor[]> => {
 };
 
 export const getDebtor = async (id: number): Promise<Debtor> => {
-  const response = await fetch(`${API_URL}/debtors/${id}`);
+  const response = await apiFetch(`/debtors/${id}`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch debtor");
@@ -24,7 +23,7 @@ export const getDebtor = async (id: number): Promise<Debtor> => {
 };
 
 export const createDebtor = async (debtor: DebtorInput): Promise<Debtor> => {
-  const response = await fetch(`${API_URL}/debtors`, {
+  const response = await apiFetch(`/debtors`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(debtor),
@@ -41,7 +40,7 @@ export const updateDebtor = async (
   id: number,
   debtor: DebtorInput,
 ): Promise<Debtor> => {
-  const response = await fetch(`${API_URL}/debtors/${id}`, {
+  const response = await apiFetch(`/debtors/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(debtor),
@@ -55,7 +54,7 @@ export const updateDebtor = async (
 };
 
 export const deleteDebtor = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/debtors/${id}`, {
+  const response = await apiFetch(`/debtors/${id}`, {
     method: "DELETE",
   });
 

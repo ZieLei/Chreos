@@ -1,6 +1,7 @@
 import { db } from "./index.js";
 import { debtors, debts, payments } from "./schema.js";
 import type { NewDebt, NewDebtor, NewPayment } from "../types/types.js";
+import { encryptDebtor } from "../crypto.js";
 
 const seedDebtors: NewDebtor[] = [
   {
@@ -48,7 +49,7 @@ db.transaction((tx) => {
   tx.delete(debts).run();
   tx.delete(debtors).run();
 
-  tx.insert(debtors).values(seedDebtors).run();
+  tx.insert(debtors).values(seedDebtors.map(encryptDebtor)).run();
   tx.insert(debts).values(seedDebts).run();
   tx.insert(payments).values(seedPayments).run();
 });

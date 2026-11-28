@@ -1,13 +1,14 @@
 import { useEffect, useRef, type KeyboardEvent } from "react";
 import { formatPeso } from "../utils/format";
-import { useDebts } from "../hooks/useDebts";
 import type { Debtor } from "../types/types";
+import type { DebtorBalance } from "../utils/balance";
+import DecryptText from "./DecryptText";
 
 export default function Listtab({
   debtors,
   selected,
   onSelect,
-  refreshKey,
+  balances,
   focused,
   onFocus,
   query,
@@ -19,7 +20,7 @@ export default function Listtab({
   debtors: Debtor[];
   selected: number | null;
   onSelect: (id: number) => void;
-  refreshKey: number;
+  balances: Map<number, DebtorBalance>;
   focused: boolean;
   onFocus: () => void;
   query: string;
@@ -28,22 +29,11 @@ export default function Listtab({
   onSearchingChange: (searching: boolean) => void;
   onSearchKey: (e: KeyboardEvent<HTMLInputElement>) => void;
 }) {
-  const { debts, loading, error } = useDebts(refreshKey);
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (searching) searchRef.current?.focus();
   }, [searching]);
-
-  if (loading) return <p>Loading list...</p>;
-
-  if (error) return <p>{error}</p>;
-
-  // TODO: needs to handle partial payments
-  const totalDebt = (id: number) =>
-    (debts ?? [])
-      .filter((d) => d.debtorId === id && d.status !== "PAID")
-      .reduce((sum, d) => sum + d.amount, 0);
 
   return (
     <div className="flex border-2 border-mint-green p-2" onMouseDown={onFocus}>
@@ -88,7 +78,7 @@ export default function Listtab({
             <Card
               key={d.id}
               debtor={d}
-              debt={totalDebt(d.id)}
+              debt={balances.get(d.id)?.owed ?? 0}
               isSelected={d.id === selected}
               onSelect={() => onSelect(d.id)}
             />
@@ -132,7 +122,8 @@ function Card({
             onClick={onSelect}
             className={`flex-1 px-2 text-left ${isSelected ? "text-dark-cyan bg-mint-green" : "text-mint-green bg-black"}`}
           >
-            {debtor.firstName} {debtor.lastName} :{" "}
+            <DecryptText text={`${debtor.firstName} ${debtor.lastName}`} />{" "}
+            :{" "}
           </button>
           <span>{formatPeso(debt)}</span>
         </div>

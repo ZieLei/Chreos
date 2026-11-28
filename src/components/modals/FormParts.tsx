@@ -1,4 +1,5 @@
 import type { InputHTMLAttributes } from "react";
+import DatePicker, { type DatePickerProps } from "../DatePicker";
 
 type FormFieldProps = {
   label: string;
@@ -16,6 +17,21 @@ export function FormField({ label, ...input }: FormFieldProps) {
         className="border-2 border-mint-green bg-black text-2xl text-mint-green outline-none px-2 placeholder:text-deep-teal focus:bg-mint-green focus:text-dark-cyan"
       />
     </label>
+  );
+}
+
+// Same layout as FormField, with the themed date picker instead of a text input
+export function FormDateField({
+  label,
+  ...picker
+}: { label: string } & DatePickerProps) {
+  return (
+    <>
+      <span className="text-2xl text-cloud-sky whitespace-nowrap">
+        {"["} {label} {"] -"}
+      </span>
+      <DatePicker {...picker} />
+    </>
   );
 }
 

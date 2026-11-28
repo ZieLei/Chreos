@@ -1,10 +1,19 @@
 import type { Payment, PaymentInput } from "../types/types";
+import { apiFetch } from "./client";
 import { errorMessage } from "./error";
 
-const API_URL = "http://localhost:8000/api";
+export const getAllPayments = async (): Promise<Payment[]> => {
+  const response = await apiFetch(`/payments`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch payments");
+  }
+
+  return response.json();
+};
 
 export const getPayments = async (debtorId: number): Promise<Payment[]> => {
-  const response = await fetch(`${API_URL}/debtors/${debtorId}/payments`);
+  const response = await apiFetch(`/debtors/${debtorId}/payments`);
 
   if (!response.ok) {
     throw new Error("Failed to fetch payments");
@@ -17,7 +26,7 @@ export const createPayment = async (
   debtId: number,
   payment: PaymentInput,
 ): Promise<Payment> => {
-  const response = await fetch(`${API_URL}/debts/${debtId}/payments`, {
+  const response = await apiFetch(`/debts/${debtId}/payments`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payment),
@@ -31,7 +40,7 @@ export const createPayment = async (
 };
 
 export const deletePayment = async (id: number): Promise<void> => {
-  const response = await fetch(`${API_URL}/payments/${id}`, {
+  const response = await apiFetch(`/payments/${id}`, {
     method: "DELETE",
   });
 

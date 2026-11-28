@@ -4,6 +4,21 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "./db/index.js";
 import { debtors, debts, payments } from "./db/schema.js";
 import type { DebtStatus } from "./types/types.js";
+import {
+  ALGORITHM,
+  ENCRYPTED_FIELDS,
+  decryptDebtor,
+  encryptDebtor,
+} from "./crypto.js";
+import {
+  clearFailedAttempts,
+  createSession,
+  deleteSession,
+  lockoutRemaining,
+  recordFailedAttempt,
+  requireAuth,
+  verifySecret,
+} from "./auth.js";
 
 const app = express();
 
@@ -77,6 +92,51 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "OK" });
 });
 
+// ---------- Auth ----------
+
+app.post("/api/login", (req, res) => {
+  const client = req.ip ?? "unknown";
+  const wait = lockoutRemaining(client);
+
+  if (wait > 0) {
+    res.status(429).json({
+      message: `Too many attempts, try again in ${Math.ceil(wait / 1000)}s`,
+    });
+    return;
+  }
+
+  const secret = req.body?.secret;
+
+  if (typeof secret !== "string" || !verifySecret(secret)) {
+    recordFailedAttempt(client);
+    res.status(401).json({ message: "Access denied" });
+    return;
+  }
+
+  clearFailedAttempts(client);
+  res.json(createSession());
+});
+
+// Everything registered below needs a valid session
+app.use("/api", requireAuth);
+
+app.get("/api/session", (_req, res) => {
+  res.json({ status: "OK" });
+});
+
+app.post("/api/logout", (_req, res) => {
+  deleteSession(res.locals.token);
+  res.status(204).end();
+});
+
+// What the frontend header shows, so it reflects the real setup
+app.get("/api/crypto", (_req, res) => {
+  res.json({
+    algorithm: ALGORITHM.toUpperCase(),
+    encryptedFields: ENCRYPTED_FIELDS,
+  });
+});
+
 // ---------- Debtors ----------
 
 app.get("/api/debtors/:id", (req, res) => {
@@ -91,11 +151,11 @@ app.get("/api/debtors/:id", (req, res) => {
     return;
   }
 
-  res.json(debtor);
+  res.json(decryptDebtor(debtor));
 });
 
 app.get("/api/debtors", (_req, res) => {
-  res.json(db.select().from(debtors).all());
+  res.json(db.select().from(debtors).all().map(decryptDebtor));
 });
 
 app.post("/api/debtors", (req, res) => {
@@ -106,7 +166,13 @@ app.post("/api/debtors", (req, res) => {
     return;
   }
 
-  res.status(201).json(db.insert(debtors).values(data).returning().get());
+  const debtor = db
+    .insert(debtors)
+    .values(encryptDebtor(data))
+    .returning()
+    .get();
+
+  res.status(201).json(decryptDebtor(debtor));
 });
 
 app.put("/api/debtors/:id", (req, res) => {
@@ -120,7 +186,7 @@ app.put("/api/debtors/:id", (req, res) => {
 
   const debtor = db
     .update(debtors)
-    .set(data)
+    .set(encryptDebtor(data))
     .where(eq(debtors.id, id))
     .returning()
     .get();
@@ -130,7 +196,7 @@ app.put("/api/debtors/:id", (req, res) => {
     return;
   }
 
-  res.json(debtor);
+  res.json(decryptDebtor(debtor));
 });
 
 app.delete("/api/debtors/:id", (req, res) => {
@@ -230,6 +296,10 @@ app.delete("/api/debts/:id", (req, res) => {
 
 // ---------- Payments ----------
 
+app.get("/api/payments", (_req, res) => {
+  res.json(db.select().from(payments).all());
+});
+
 app.get("/api/debtors/:debtorId/payments", (req, res) => {
   const debtorId = Number(req.params.debtorId);
 
@@ -305,5 +375,25 @@ app.delete("/api/payments/:id", (req, res) => {
 
   res.status(204).end();
 });
+
+// Express 5 forwards thrown errors here. A failed decrypt means the stored
+// value was tampered with or ENCRYPTION_KEY changed.
+app.use(
+  (
+    err: Error,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction,
+  ) => {
+    console.error(err);
+
+    const decryptFailed = err.message.includes("unable to authenticate data");
+    res.status(500).json({
+      message: decryptFailed
+        ? "Could not decrypt record: data was tampered with or the key changed"
+        : "Something went wrong",
+    });
+  },
+);
 
 export default app;

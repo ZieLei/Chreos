@@ -1,22 +1,25 @@
 import type { Debtor } from "../types/types";
+import DecryptText from "./DecryptText";
 
 interface ProfileTabProps {
   debtor: Debtor;
 }
 
 export default function ProfileTab({ debtor }: ProfileTabProps) {
+  // `encrypted` fields are stored with AES-256-GCM, they get the decrypt effect
   const infos = [
-    ["FIRST NAME", debtor.firstName],
-    ["LAST NAME", debtor.lastName],
-    ["BIRTHDATE", debtor.birthday],
-    ["PHONE", debtor.phoneNumber],
-    ["EMAIL", debtor.email],
-    ["FACEBOOK", debtor.facebook],
+    ["FIRST NAME", debtor.firstName, true],
+    ["LAST NAME", debtor.lastName, true],
+    ["BIRTHDATE", debtor.birthday, true],
+    ["PHONE", debtor.phoneNumber, true],
+    ["EMAIL", debtor.email, true],
+    ["FACEBOOK", debtor.facebook, true],
     [
       "LAST REMINDED",
       debtor.lastReminded ? debtor.lastReminded : "Not reminded yet",
+      false,
     ],
-  ];
+  ] as const;
 
   return (
     <div className="flex border-2 w-fit whitespace-nowrap shrink-0 border-mint-green p-2">
@@ -39,13 +42,21 @@ export default function ProfileTab({ debtor }: ProfileTabProps) {
           alt={debtor.firstName}
         />
         <div className="flex flex-col border-2 border-mint-green h-full justify-between p-2 gap-2">
-          {infos.map(([label, value]) => (
+          {infos.map(([label, value, encrypted]) => (
             <div key={label} className="flex flex-row gap-10">
               <span className="flex-1 text-2xl text-cloud-sky">
                 {"["} {label} {"] -"}
               </span>
 
-              <span className="text-2xl">{value}</span>
+              <span className="text-2xl">
+                {encrypted && value ? (
+                  // Keyed by debtor so it replays on every record switch, even
+                  // when two debtors share a value (e.g. the same phone number)
+                  <DecryptText key={debtor.id} text={value} />
+                ) : (
+                  value
+                )}
+              </span>
             </div>
           ))}
         </div>

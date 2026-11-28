@@ -2,7 +2,13 @@ import { useState, type FormEvent } from "react";
 import { createPayment } from "../../api/payment.api";
 import type { Debt, Payment } from "../../types/types";
 import { formatPeso, today } from "../../utils/format";
-import { FormButtons, FormError, FormField, FormTitle } from "./FormParts";
+import {
+  FormButtons,
+  FormDateField,
+  FormError,
+  FormField,
+  FormTitle,
+} from "./FormParts";
 
 const methods = ["CASH", "GCASH", "BANK"];
 
@@ -57,13 +63,7 @@ export default function PaymentForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <FormField
-          label="PAID AT"
-          required
-          placeholder="YYYY-MM-DD"
-          value={paidAt}
-          onChange={(e) => setPaidAt(e.target.value)}
-        />
+        <FormDateField label="PAID AT" value={paidAt} onChange={setPaidAt} />
         <span className="text-2xl text-cloud-sky whitespace-nowrap">
           {"[ METHOD ] -"}
         </span>

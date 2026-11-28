@@ -1,7 +1,13 @@
 import { useState, type FormEvent } from "react";
 import type { Debt, DebtInput } from "../../types/types";
 import { today } from "../../utils/format";
-import { FormButtons, FormError, FormField, FormTitle } from "./FormParts";
+import {
+  FormButtons,
+  FormDateField,
+  FormError,
+  FormField,
+  FormTitle,
+} from "./FormParts";
 
 type DebtFormProps = {
   title: string;
@@ -59,18 +65,13 @@ export default function DebtForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
-        <FormField
-          label="DATE"
-          required
-          placeholder="YYYY-MM-DD"
-          value={createdAt}
-          onChange={(e) => setCreatedAt(e.target.value)}
-        />
-        <FormField
+        <FormDateField label="DATE" value={createdAt} onChange={setCreatedAt} />
+        <FormDateField
           label="DUE DATE"
-          placeholder="YYYY-MM-DD (OPTIONAL)"
+          optional
+          placeholder="NO DUE DATE"
           value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
+          onChange={setDueDate}
         />
       </div>
       <FormError error={error} />

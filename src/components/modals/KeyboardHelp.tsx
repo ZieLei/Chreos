@@ -13,6 +13,7 @@ const sections = [
       ["W", "Add debt"],
       ["D / DEL", "Delete debtor"],
       ["ESC", "Clear search filter"],
+      ["Q", "Log out"],
     ],
   },
   {
@@ -41,6 +42,17 @@ const sections = [
       ["ENTER", "Save"],
       ["ESC", "Cancel"],
       ["Y / N", "Confirm / cancel delete"],
+    ],
+  },
+  {
+    title: "DATE PICKER",
+    keys: [
+      ["ENTER / ↓", "Open calendar"],
+      ["← → ↑ ↓", "Move day / week"],
+      ["PGUP / PGDN", "Month (+SHIFT: year)"],
+      ["Y", "Pick year"],
+      ["T", "Jump to today"],
+      ["DEL", "Clear optional date"],
     ],
   },
 ];
