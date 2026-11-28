@@ -5,6 +5,7 @@ import {
   FormDateField,
   FormError,
   FormField,
+  FormImageField,
   FormTitle,
 } from "./FormParts";
 
@@ -15,7 +16,7 @@ const fields = [
   { name: "phoneNumber", label: "PHONE", type: "tel" },
   { name: "email", label: "EMAIL", type: "email" },
   { name: "facebook", label: "FACEBOOK" },
-  { name: "picture", label: "PICTURE URL" },
+  { name: "picture", label: "PICTURE" },
 ] as const;
 
 type DebtorFormProps = {
@@ -66,7 +67,14 @@ export default function DebtorForm({
       <FormTitle>{title}</FormTitle>
       <div className="grid grid-cols-[auto_1fr] gap-x-5 gap-y-2 items-center">
         {fields.map((field, i) =>
-          field.name === "birthday" ? (
+          field.name === "picture" ? (
+            <FormImageField
+              key={field.name}
+              label={field.label}
+              value={form.picture}
+              onChange={(picture) => setForm({ ...form, picture })}
+            />
+          ) : field.name === "birthday" ? (
             <FormDateField
               key={field.name}
               label={field.label}

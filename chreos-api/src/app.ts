@@ -23,7 +23,8 @@ import {
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+// Pictures are sent as data URLs (~30KB after the client shrinks them)
+app.use(express.json({ limit: "2mb" }));
 
 // Trims strings and turns empty values into null so optional columns stay clean.
 const text = (value: unknown): string | null =>

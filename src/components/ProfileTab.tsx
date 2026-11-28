@@ -36,11 +36,17 @@ export default function ProfileTab({ debtor }: ProfileTabProps) {
             <h1 className="font-terminal text-2xl text-center">?</h1>
           </div>
         </div>
-        <img
-          className="aspect-square my-2 h-40 w-auto object-cover self-center border-2 border-mint-green p-2"
-          src={debtor.picture}
-          alt={debtor.firstName}
-        />
+        {debtor.picture ? (
+          <img
+            className="aspect-square my-2 h-40 w-auto object-cover self-center border-2 border-mint-green p-2"
+            src={debtor.picture}
+            alt={debtor.firstName}
+          />
+        ) : (
+          <div className="flex aspect-square my-2 h-40 self-center justify-center items-center border-2 border-mint-green p-2 text-2xl text-deep-teal">
+            {"[ NO PICTURE ]"}
+          </div>
+        )}
         <div className="flex flex-col border-2 border-mint-green h-full justify-between p-2 gap-2">
           {infos.map(([label, value, encrypted]) => (
             <div key={label} className="flex flex-row gap-10">

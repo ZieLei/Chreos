@@ -1,5 +1,6 @@
 import type { InputHTMLAttributes } from "react";
 import DatePicker, { type DatePickerProps } from "../DatePicker";
+import ImagePicker, { type ImagePickerProps } from "../ImagePicker";
 
 type FormFieldProps = {
   label: string;
@@ -31,6 +32,21 @@ export function FormDateField({
         {"["} {label} {"] -"}
       </span>
       <DatePicker {...picker} />
+    </>
+  );
+}
+
+// Same layout as FormField, with a file browser for images
+export function FormImageField({
+  label,
+  ...picker
+}: { label: string } & ImagePickerProps) {
+  return (
+    <>
+      <span className="text-2xl text-cloud-sky whitespace-nowrap">
+        {"["} {label} {"] -"}
+      </span>
+      <ImagePicker {...picker} />
     </>
   );
 }
